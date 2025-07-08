@@ -3,11 +3,10 @@ import asyncio
 from fastapi import Depends, FastAPI, HTTPException, status
 from sqlalchemy.orm import Session
 
-from repository.complaint_repository import ComplaintRepository
-# Импорты из новой структуры
-from repository.session import get_db
+from repositories.complaint_repository import ComplaintRepository
+from repositories.session import get_db
 from schemas.complaint_schema import ComplaintCreate, ComplaintResponse
-from services.complaint_tone import ComplaintAiService
+from services.complaint_services import ComplaintAiService
 
 app = FastAPI(
     title="Complaint Handling System API",
@@ -26,11 +25,6 @@ async def create_complaint(
     complaint: ComplaintCreate, 
     db: Session = Depends(get_db)
 ):
-    """
-    Create a new customer complaint with:
-    - **text**: Complaint content (required)
-    - AI will automatically analyze sentiment and category (async)
-    """
     complaint_repo = ComplaintRepository(session=db)
     ai_service = ComplaintAiService(complaint_repo)
     
@@ -55,7 +49,7 @@ async def get_recent_open_complaints(
     db: Session = Depends(get_db)
 ):
     complaint_repo = ComplaintRepository(session=db)
-    return await complaint_repo.get_open_complaint(hours=hours)
+    return await complaint_repo.get_open_technical_complaint(hours=hours)
 
 @app.patch(
     "/complaints/{complaint_id}/close/",
@@ -70,11 +64,6 @@ def close_complaint(
     complaint_id: int, 
     db: Session = Depends(get_db)
 ):
-    """
-    Close a complaint by ID:
-    - Updates status to 'closed'
-    - Returns success message
-    """
     complaint_repo = ComplaintRepository(session=db)
     db_complaint = complaint_repo.update_complaint(
         complaint_id=complaint_id,
