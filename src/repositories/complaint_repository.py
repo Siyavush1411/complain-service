@@ -1,4 +1,5 @@
 from datetime import timedelta, datetime
+from common.enums import ComplaintCategory
 from sqlalchemy.orm import Session
 from models.complaint import Complaint
 from schemas.complaint_schema import ComplaintCreate
@@ -15,7 +16,9 @@ class ComplaintRepository:
         self._db.refresh(db_complaint)
         return db_complaint
 
-    async def update_complaint(self, complaint_id: int, **kwargs) -> Complaint | None:
+    async def update_complaint(
+        self, complaint_id: int, **kwargs
+    ) -> Complaint | None:
         db_complaint = (
             self._db.query(Complaint)
             .filter(Complaint.id == complaint_id)
@@ -31,9 +34,18 @@ class ComplaintRepository:
         self._db.refresh(db_complaint)   
         return db_complaint
     
-    async def get_open_complaint(self, hours: int = 1): # ну по дефолту за последний час будет собирать открытые жалобы
+    # ну по дефолту за последний час будет собирать открытые жалобы
+    async def get_open_complaint(self, hours: int = 1):
         time_threshold = datetime.utcnow() - timedelta(hours=hours)
         return self._db.query(Complaint).filter(
             Complaint.status == "open",
             Complaint.timestamp >= time_threshold
+        ).all()
+        
+    async def get_open_technical_complaint(self, hours: int = 1):
+        time_threshold = datetime.utcnow() - timedelta(hours=hours)
+        return self._db.query(Complaint).filter(
+            Complaint.status == "open",
+            Complaint.timestamp >= time_threshold,
+            Complaint.category == ComplaintCategory.TECHNICAL
         ).all()
