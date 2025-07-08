@@ -1,11 +1,12 @@
-from fastapi import FastAPI, Depends, HTTPException, status
-from sqlalchemy.orm import Session
 import asyncio
 
+from fastapi import Depends, FastAPI, HTTPException, status
+from sqlalchemy.orm import Session
+
+from repository.complaint_repository import ComplaintRepository
 # Импорты из новой структуры
 from repository.session import get_db
 from schemas.complaint_schema import ComplaintCreate, ComplaintResponse
-from repository.complaint_repository import ComplaintRepository
 from services.complaint_tone import ComplaintAiService
 
 app = FastAPI(
@@ -33,7 +34,7 @@ async def create_complaint(
     complaint_repo = ComplaintRepository(session=db)
     ai_service = ComplaintAiService(complaint_repo)
     
-    db_complaint = complaint_repo.create_complaint(complaint)
+    db_complaint = await complaint_repo.create_complaint(complaint)
     
     asyncio.create_task(
         ai_service.process_complaint(
@@ -49,12 +50,12 @@ async def create_complaint(
     summary="Get recent open complaints",
     description="Returns complaints with status=open from the last N hours"
 )
-def get_recent_open_complaints(
+async def get_recent_open_complaints(
     hours: int = 1,
     db: Session = Depends(get_db)
 ):
     complaint_repo = ComplaintRepository(session=db)
-    return complaint_repo.get_open_complaint(hours=hours)
+    return await complaint_repo.get_open_complaint(hours=hours)
 
 @app.patch(
     "/complaints/{complaint_id}/close/",
