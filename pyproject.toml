@@ -1,0 +1,22 @@
+[project]
+name = "complain-service"
+version = "0.1.0"
+description = "For complains"
+authors = [
+    {name = "Siyavush1411",email = "siyavushmirzaev375@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi (>=0.116.0,<0.117.0)",
+    "uvicorn (>=0.35.0,<0.36.0)",
+    "python-dotenv (>=1.1.1,<2.0.0)",
+    "sqlalchemy (>=2.0.41,<3.0.0)",
+    "requests (>=2.32.4,<3.0.0)",
+    "openai (>=1.93.1,<2.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
