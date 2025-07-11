@@ -1,5 +1,5 @@
 import httpx
-from common.enums import SentimentType
+from src.core.common.enums import SentimentType
 
 
 class SentimentClient:

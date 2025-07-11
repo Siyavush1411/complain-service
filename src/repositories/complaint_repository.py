@@ -1,8 +1,10 @@
-from datetime import timedelta, datetime
-from common.enums import ComplaintCategory
+from datetime import datetime, timedelta
+
 from sqlalchemy.orm import Session
-from models.complaint import Complaint
-from schemas.complaint_schema import ComplaintCreate
+
+from src.core.common.enums import ComplaintCategory
+from src.core.models.complaint import Complaint
+from src.schemas.complaint_schema import ComplaintCreate
 
 
 class ComplaintRepository:
@@ -29,7 +31,7 @@ class ComplaintRepository:
             return None     
         for key, value in kwargs.items():
             setattr(db_complaint, key, value)
-
+        self._db.add(db_complaint)
         self._db.commit()
         self._db.refresh(db_complaint)   
         return db_complaint

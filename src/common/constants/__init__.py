@@ -1,1 +1,0 @@
-from common.constants.open_ai_constants import PROMPT_FOR_GPT
